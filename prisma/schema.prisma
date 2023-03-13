@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MA")
+}
+
+model Comment {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  content String
+}
+
+model User {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  avator     String   @default("http://test.kuugacoder.top/img7.jpg")
+  email      String   @unique
+  userName   String
+  password   String
+  sign       String?  @default("今天要开心哦~")
+  birth      String?  @default("1949-10-01")
+  gender     Int?     @default(0)
+  address    Address?
+  tips       String[] @default(["新用户"])
+  createTime DateTime @default(now())
+  updateTime DateTime @updatedAt
+}
+
+model Clothing {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  imgs           String[]
+  name           String
+  size           String   @default("s")
+  style          String[] @default(["运动风", "休闲风"]) //风格
+  mood           String //情绪
+  price          Float //单价
+  suitablePeople String[] @default(["青年", "中年"])
+  Trendy         String[] @default(["男装"])
+  hotPoint       String[] @default([])
+  count          Int      @default(0) //数量
+  season         String   @default("spring") //季节
+  createTime     DateTime @default(now())
+  updateTime     DateTime @updatedAt
+  owner          Trader   @relation(fields: [traderId], references: [id])
+  traderId       String   @db.ObjectId
+}
+
+model Trader {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  userName   String     @unique
+  email      String     @unique
+  avator     String     @default("")
+  address    Address
+  Clothing   Clothing[]
+  createTime DateTime   @default(now())
+  updateTime DateTime   @updatedAt
+}
+
+model Feedback {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String
+  name    String
+  phone   String
+  gender  Int
+  content String
+  time    String
+  type    String
+}
+
+model History {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String
+  img      String
+  style    String
+  title    String
+  desc     String
+  viewTime DateTime @default(now())
+}
+
+// Address is an embedded document
+type Address {
+  detail   String?
+  area     String
+  city     String
+  Province String
+}
